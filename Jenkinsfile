@@ -95,6 +95,8 @@ node {
         def json = sh(returnStdout: true, script: "cat $dataFile")
         known = slurpJson(json)
         println "Known read from file: $known"
+        perform('zomis', known)
+        println "Known is after perform: $known"
     } else {
         perform('zomis', known)
         println "Known is: $known"
