@@ -91,7 +91,7 @@ properties(
 */
 
 @NonCPS
-def runInJenkins(String user) {
+def runInJenkins(String user, String dataFile) {
     def duga = new Duga()
     def known = [:]
     if (fileExists(dataFile)) {
@@ -114,5 +114,5 @@ def runInJenkins(String user) {
 
 
 node {
-    runInJenkins('zomis')
+    runInJenkins('zomis', dataFile)
 }
