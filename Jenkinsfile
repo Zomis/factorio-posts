@@ -57,12 +57,12 @@ def updateReplies(known, def mod, def msg, def replies) {
 
 @NonCPS
 def perform(String user) {
-    def url = "https://mods.factorio.com/api/mods?owner=$user&page_size=100&page=1".toURL()
-    def data = json.parse(url)
+    def urlData = "https://mods.factorio.com/api/mods?owner=$user&page_size=100&page=1".toURL().text
+    def data = slurpJson(urlData)
     data.results.each { mod ->
         def modName = mod.name
-        def msgUrl = "https://mods.factorio.com/api/messages?page_size=50&mod=$modName&page=1&order=oldest".toURL()
-        def msgs = json.parse(msgUrl)
+        def msgUrlData = "https://mods.factorio.com/api/messages?page_size=50&mod=$modName&page=1&order=oldest".toURL().text
+        def msgs = slurpJson(msgUrlData)
         updateMod(known, mod, msgs)
         msgs.results.each { msg ->
             def createdAt = msg.created_at
@@ -70,8 +70,8 @@ def perform(String user) {
             def header = msg.title
             def body = msg.message
 
-            def repliesUrl = "https://mods.factorio.com/api/messages?page_size=100&order=oldest&parent=$msg.id&page=1".toURL()
-            def replies = json.parse(repliesUrl)
+            def repliesUrlData = "https://mods.factorio.com/api/messages?page_size=100&order=oldest&parent=$msg.id&page=1".toURL().text
+            def replies = slurpJson(repliesUrlData)
             updateReplies(known, mod, msg, replies)
         }
     }
