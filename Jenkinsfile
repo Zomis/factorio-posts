@@ -2,6 +2,7 @@
 
 @Library('ZomisJenkins')
 import net.zomis.jenkins.Duga
+import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
 @NonCPS
@@ -90,8 +91,15 @@ node {
         def json = sh(returnStdout: true, script: "cat $dataFile")
         known = slurpJson(json)
         println "Known read from file: $known"
+    } else {
+        perform('zomis', known)
+        println "Known is: $known"
+        // duga.dugaResult('Data file did not exist. Existing threads is ' + known)
     }
-    perform('zomis', known)
-    println "Known is: $known"
-    // duga.dugaResult('ERROR: ' + file.path + ' resulted in exit status ' + exitStatus)
+    def builder = new JsonBuilder()
+    builder(known)
+    println builder.toString()
+    def file = new File(dataFile)
+    file.write(builder.toString())
+
 }
