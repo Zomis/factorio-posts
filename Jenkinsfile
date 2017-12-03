@@ -11,7 +11,6 @@ def slurpJson(json) {
 }
 
 def dataFile = '/home/zomis/jenkins/factorio_posts.json'
-def duga = new Duga()
 
 @NonCPS
 def inform(def mod, String title, String body) {
@@ -19,6 +18,7 @@ def inform(def mod, String title, String body) {
     String firstLine = String.format("**\\[[%s](%s)\\]** **%s**", mod.owner + "/" + mod.name, modUrl, title);
     body = body.split('\n')[0]
     String secondLine = "> $body"
+    def duga = new Duga()
     duga.dugaResult(firstLine)
     duga.dugaResult(secondLine)
 }
@@ -90,6 +90,7 @@ properties(
 )
 */
 node {
+    def duga = new Duga()
     def known = [:]
     if (fileExists(dataFile)) {
         def json = sh(returnStdout: true, script: "cat $dataFile")
