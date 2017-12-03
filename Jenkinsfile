@@ -27,8 +27,10 @@ def updateMod(known, def mod, def msgs) {
     def size = msgs.results.size()
     String key = mod.owner + '/' + mod.name
     if (!known.containsKey(key)) {
+        println "updateMod: Known did not contain key $key"
         known[key] = size
     }
+    println "updateMod: Comparing for $key: ${known[key]} vs. size $size"
     if (known[key] != size) {
         int lastKnown = known[key]
         for (int i = lastKnown; i < size; i++) {
@@ -44,8 +46,10 @@ def updateReplies(known, def mod, def msg, def replies) {
     def size = replies.results.size()
     def key = mod.name + '/' + msg.id
     if (!known.containsKey(key)) {
+        println "updateReplies: Known did not contain key $key"
         known[key] = size
     }
+    println "updateReplies: Comparing for $key: ${known[key]} vs. size $size"
     if (known[key] != size) {
         int lastKnown = known[key]
         String modKey = mod.owner + '/' + mod.name
