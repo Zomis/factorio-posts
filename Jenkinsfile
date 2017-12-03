@@ -2,6 +2,7 @@
 
 @Library('ZomisJenkins')
 import net.zomis.jenkins.Duga
+import groovy.json.JsonSlurper
 
 @NonCPS
 def slurpJson(json) {
