@@ -10,8 +10,6 @@ def slurpJson(json) {
   return new JsonSlurper().parseText(json)
 }
 
-def dataFile = '/home/zomis/jenkins/factorio_posts.json'
-
 @NonCPS
 def inform(def mod, String title, String body) {
     def modUrl = "https://mods.factorio.com/mods/$mod.owner/$mod.name"
@@ -92,6 +90,7 @@ properties(
 
 @NonCPS
 def runInJenkins(String user) {
+    def dataFile = '/home/zomis/jenkins/factorio_posts.json'
     def duga = new Duga()
     def known = [:]
     if (fileExists(dataFile)) {
