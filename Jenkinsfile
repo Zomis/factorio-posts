@@ -56,7 +56,7 @@ def updateReplies(known, def mod, def msg, def replies) {
 }
 
 @NonCPS
-def perform(String user) {
+def perform(String user, known) {
     def urlData = "https://mods.factorio.com/api/mods?owner=$user&page_size=100&page=1".toURL().text
     def data = slurpJson(urlData)
     data.results.each { mod ->
@@ -91,7 +91,7 @@ node {
         known = slurpJson(json)
         println "Known read from file: $known"
     }
-    perform('zomis')
+    perform('zomis', known)
     println "Known is: $known"
     // duga.dugaResult('ERROR: ' + file.path + ' resulted in exit status ' + exitStatus)
 }
