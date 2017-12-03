@@ -11,6 +11,7 @@ def slurpJson(json) {
 }
 
 def dataFile = '/home/zomis/jenkins/factorio_posts.json'
+def duga = new Duga()
 
 @NonCPS
 def inform(def mod, String title, String body) {
@@ -89,7 +90,6 @@ properties(
 )
 */
 node {
-    def duga = new Duga()
     def known = [:]
     if (fileExists(dataFile)) {
         def json = sh(returnStdout: true, script: "cat $dataFile")
@@ -100,7 +100,7 @@ node {
     } else {
         perform('zomis', known)
         println "Known is: $known"
-        // duga.dugaResult('Data file did not exist. Existing threads is ' + known)
+        duga.dugaResult('Data file did not exist. Existing threads is ' + known)
     }
     def builder = new JsonBuilder()
     builder(known)
