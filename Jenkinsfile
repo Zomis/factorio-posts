@@ -89,17 +89,19 @@ properties(
     ]
 )
 */
-node {
+
+@NonCPS
+def runInJenkins(String user) {
     def duga = new Duga()
     def known = [:]
     if (fileExists(dataFile)) {
         def json = sh(returnStdout: true, script: "cat $dataFile")
         known = slurpJson(json)
         println "Known read from file: $known"
-        perform('zomis', known)
+        perform(user, known)
         println "Known is after perform: $known"
     } else {
-        perform('zomis', known)
+        perform(user, known)
         println "Known is: $known"
         duga.dugaResult('Data file did not exist. Existing threads is ' + known)
     }
@@ -108,5 +110,9 @@ node {
     println builder.toString()
     def file = new File(dataFile)
     file.write(builder.toString())
+}
 
+
+node {
+    runInJenkins('zomis')
 }
