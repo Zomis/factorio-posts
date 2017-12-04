@@ -125,7 +125,7 @@ def runForUser(String user, String dataFile) {
         def duga = new Duga()
         duga.dugaResult('Data file did not exist. Existing threads is ' + known)
     }
-    saveResult(exists)
+    saveResult(dataFile, known)
 }
 
 
