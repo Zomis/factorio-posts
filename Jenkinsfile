@@ -127,6 +127,7 @@ def runInJenkins(String user, String dataFile, boolean dataFileExists) {
 
 
 node {
+    String dataFile = '/home/zomis/jenkins/factorio_posts.json'
     boolean exists = fileExists(dataFile)
-    runInJenkins('zomis', '/home/zomis/jenkins/factorio_posts.json', exists)
+    runInJenkins('zomis', dataFile, exists)
 }
