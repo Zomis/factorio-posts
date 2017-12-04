@@ -95,12 +95,13 @@ properties(
 */
 
 @NonCPS
-def runInJenkins(String user, String dataFile) {
+def runInJenkins(String user, String dataFile, boolean dataFileExists) {
     try {
     println "Run $user with dataFile $dataFile"
     def duga = new Duga()
     def known = [:]
-    if (fileExists(dataFile)) {
+    
+    if (dataFileExists) {
         println "Datafile exists"
         def json = sh(returnStdout: true, script: "cat $dataFile")
         known = slurpJson(json)
@@ -126,5 +127,6 @@ def runInJenkins(String user, String dataFile) {
 
 
 node {
-    runInJenkins('zomis', '/home/zomis/jenkins/factorio_posts.json')
+    boolean exists = fileExists(dataFile)
+    runInJenkins('zomis', '/home/zomis/jenkins/factorio_posts.json', exists)
 }
