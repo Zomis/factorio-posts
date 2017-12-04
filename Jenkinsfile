@@ -117,10 +117,12 @@ def runForUser(String user, String dataFile) {
         known = slurpJson(json)
         println "Known read from file: $known"
         perform(user, known)
+        println "Done with perform."
         println "Known is after perform: $known"
     } else {
         println "Datafile does not exists"
         perform(user, known)
+        println "Done with perform."
         println "Known is: $known"
         def duga = new Duga()
         duga.dugaResult('Data file did not exist. Existing threads is ' + known)
