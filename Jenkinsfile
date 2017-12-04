@@ -61,21 +61,27 @@ def updateReplies(known, def mod, def msg, def replies) {
 
 @NonCPS
 def perform(String user, known) {
+    println "Fetching data for $user"
     def urlData = "https://mods.factorio.com/api/mods?owner=$user&page_size=100&page=1".toURL().text
     def data = slurpJson(urlData)
+    println "Fetched: $data"
     data.results.each { mod ->
         def modName = mod.name
+        println "Fetching data for $user / $modName"
         def msgUrlData = "https://mods.factorio.com/api/messages?page_size=50&mod=$modName&page=1&order=oldest".toURL().text
         def msgs = slurpJson(msgUrlData)
+        println "Fetched: $msgs"
         updateMod(known, mod, msgs)
         msgs.results.each { msg ->
             def createdAt = msg.created_at
             def lastReplyAt = msg.last_reply_at
             def header = msg.title
             def body = msg.message
-
+            
+            println "Fetching data for $user / $modName / $header"
             def repliesUrlData = "https://mods.factorio.com/api/messages?page_size=100&order=oldest&parent=$msg.id&page=1".toURL().text
             def replies = slurpJson(repliesUrlData)
+            println "Fetched: $replies"
             updateReplies(known, mod, msg, replies)
         }
     }
@@ -90,16 +96,19 @@ properties(
 
 @NonCPS
 def runInJenkins(String user, String dataFile) {
+    try {
     println "Run $user with dataFile $dataFile"
     def duga = new Duga()
     def known = [:]
     if (fileExists(dataFile)) {
+        println "Datafile exists"
         def json = sh(returnStdout: true, script: "cat $dataFile")
         known = slurpJson(json)
         println "Known read from file: $known"
         perform(user, known)
         println "Known is after perform: $known"
     } else {
+        println "Datafile does not exists"
         perform(user, known)
         println "Known is: $known"
         duga.dugaResult('Data file did not exist. Existing threads is ' + known)
@@ -109,6 +118,10 @@ def runInJenkins(String user, String dataFile) {
     println builder.toString()
     def file = new File(dataFile)
     file.write(builder.toString())
+    } catch (Exception ex) {
+        println "Failing: $ex"
+        ex.printStackTrace()
+    }
 }
 
 
