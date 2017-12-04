@@ -95,25 +95,8 @@ properties(
 */
 
 @NonCPS
-def runInJenkins(String user, String dataFile, boolean dataFileExists) {
+def saveResult(String dataFile, def known) {
     try {
-    println "Run $user with dataFile $dataFile"
-    def duga = new Duga()
-    def known = [:]
-    
-    if (dataFileExists) {
-        println "Datafile exists"
-        def json = sh(returnStdout: true, script: "cat $dataFile")
-        known = slurpJson(json)
-        println "Known read from file: $known"
-        perform(user, known)
-        println "Known is after perform: $known"
-    } else {
-        println "Datafile does not exists"
-        perform(user, known)
-        println "Known is: $known"
-        duga.dugaResult('Data file did not exist. Existing threads is ' + known)
-    }
     def builder = new JsonBuilder()
     builder(known)
     println builder.toString()
@@ -125,9 +108,27 @@ def runInJenkins(String user, String dataFile, boolean dataFileExists) {
     }
 }
 
+def runForUser(String user, String dataFile) {
+    println "Run $user with dataFile $dataFile"
+    def known = [:]
+    if (fileExists(dataFile)) {
+        println "Datafile exists"
+        def json = sh(returnStdout: true, script: "cat $dataFile")
+        known = slurpJson(json)
+        println "Known read from file: $known"
+        perform(user, known)
+        println "Known is after perform: $known"
+    } else {
+        println "Datafile does not exists"
+        perform(user, known)
+        println "Known is: $known"
+        def duga = new Duga()
+        duga.dugaResult('Data file did not exist. Existing threads is ' + known)
+    }
+    saveResult(exists)
+}
+
 
 node {
-    String dataFile = '/home/zomis/jenkins/factorio_posts.json'
-    boolean exists = fileExists(dataFile)
-    runInJenkins('zomis', dataFile, exists)
+    runForUser('zomis', '/home/zomis/jenkins/factorio_posts.json')
 }
