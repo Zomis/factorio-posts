@@ -2,6 +2,7 @@
 
 @GrabResolver(name='zomis', root='http://www.zomis.net/maven')
 @Grab(group='net.zomis', module='duga-core', version='0.2')
+@Grab(group='org.slf4j', module='slf4j-simple', version='1.7.25')
 import net.zomis.duga.chat.BotConfiguration
 import net.zomis.duga.chat.StackExchangeChatBot
 import net.zomis.duga.chat.TestBot
@@ -10,12 +11,17 @@ import groovy.json.JsonSlurper
 
 class FactorioPosts {
 
-def duga = new TestBot()
-def room = duga.room("16134")
+    def duga
+    def room
 
-def slurpJson(json) {
-  return new JsonSlurper().parseText(json)
-}
+    FactorioPosts(def duga) {
+        this.duga = duga
+        this.room = duga.room("16134")
+    }
+
+    def slurpJson(json) {
+        return new JsonSlurper().parseText(json)
+    }
 
 def inform(def mod, String title, String body) {
     def modUrl = "https://mods.factorio.com/mods/$mod.owner/$mod.name"
@@ -126,8 +132,31 @@ def runForUser(String user, String dataFile) {
 }
 
     static void main(String[] args) {
-        new FactorioPosts().runForUser('zomis', 'volume/factorio_posts.json')
+
+        Properties properties = new Properties()
+        File propertiesFile = new File('duga.groovy')
+        propertiesFile.withInputStream {
+            properties.load(it)
+        }
+        def config = new BotConfiguration()
+        config.rootUrl = properties.rootUrl
+        config.chatUrl = properties.chatUrl
+        config.botEmail = properties.email
+        config.botPassword = properties.password
+
+        def duga = new StackExchangeChatBot(config)
+        def atomBool = new java.util.concurrent.atomic.AtomicBoolean(false)
+        duga.registerListener(net.zomis.duga.chat.events.DugaStartedEvent.class, { e -> atomBool.set(true) })
+        duga.start()
+        while (!atomBool.get()) {
+            Thread.sleep(1000)
+        }
+        new FactorioPosts(duga).test() //.runForUser('zomis', 'volume/factorio_posts.json')
+
+        duga.stop()
+    }
+    void test() {
+        room.message('This is a test').postNow()
     }
 
 }
-
