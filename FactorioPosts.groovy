@@ -128,7 +128,7 @@ def runForUser(String user, String dataFile) {
         println "Known is: $known"
         room.message('Data file did not exist. Existing threads is ' + known).post()
     }
-//    saveResult(dataFile, known)
+    saveResult(dataFile, known)
 }
 
     static void main(String[] args) {
@@ -151,8 +151,20 @@ def runForUser(String user, String dataFile) {
         while (!atomBool.get()) {
             Thread.sleep(1000)
         }
-        new FactorioPosts(duga).test() //.runForUser('zomis', 'volume/factorio_posts.json')
+        def factorio = new FactorioPosts(duga)
 
+        while (true) {
+            try {
+                println "Waiting for 10 seconds"
+                Thread.sleep(10000)
+                factorio.runForUser('zomis', 'volume/factorio_posts.json')
+                def now = java.time.Instant.now()
+                println "Waiting for one hour at $now"
+                Thread.sleep(1000 * 60 * 60) // sleep for one hour
+            } catch (InterruptedException | RuntimeException e) {
+                break
+            }
+        }
         duga.stop()
     }
     void test() {
